@@ -1,0 +1,567 @@
+{
+  "metadata": {
+    "version": "2.0.0",
+    "description": "Longitudinal causal parameters for STARDUST CRUSADERS synthetic health data generation",
+    "domains": [
+      "Demographics & Morphology",
+      "Habits & Fitness",
+      "Sleep, Stress & Cognition",
+      "Metabolism & Vital Signs",
+      "Ophthalmology & Retinal Pathologies",
+      "Longitudinal Schedules & Lapses"
+    ]
+  },
+  "demographics": {
+    "age": {
+      "min": 18,
+      "max": 90,
+      "mean": 48.0,
+      "std": 16.0,
+      "distribution": "truncated_normal"
+    },
+    "gender": {
+      "male_probability": 0.5,
+      "classes": [
+        "Male",
+        "Female"
+      ]
+    },
+    "ethnicity": {
+      "categories": [
+        "White",
+        "Asian",
+        "Black",
+        "Hispanic",
+        "Other"
+      ],
+      "probabilities": [
+        0.5,
+        0.2,
+        0.16,
+        0.1,
+        0.04
+      ]
+    },
+    "height_m": {
+      "Male": {
+        "mean": 1.76,
+        "std": 0.08,
+        "min": 1.55,
+        "max": 2.05
+      },
+      "Female": {
+        "mean": 1.63,
+        "std": 0.07,
+        "min": 1.45,
+        "max": 1.9
+      }
+    },
+    "bmi_base": {
+      "Male": {
+        "mean": 25.8,
+        "std": 4.5,
+        "min": 16.0,
+        "max": 48.0
+      },
+      "Female": {
+        "mean": 25.0,
+        "std": 4.8,
+        "min": 15.0,
+        "max": 50.0
+      }
+    },
+    "fat_percentage": {
+      "deurenberg_bmi_coeff": 1.2,
+      "deurenberg_age_coeff": 0.23,
+      "deurenberg_male_subtraction": 10.8,
+      "deurenberg_constant": 5.4,
+      "noise_std": 2.0,
+      "min": 6.0,
+      "max": 52.0
+    }
+  },
+  "clinical_history": {
+    "smoking_status": {
+      "categories": [
+        "Never",
+        "Former",
+        "Current"
+      ],
+      "probabilities": [
+        0.52,
+        0.28,
+        0.2
+      ]
+    },
+    "family_history_eye_disease": {
+      "categories": [
+        "No",
+        "Yes"
+      ],
+      "probabilities": [
+        0.8,
+        0.2
+      ]
+    },
+    "hypertension_age_threshold": 45.0,
+    "hypertension_bmi_threshold": 28.0,
+    "cvd_base_prob": 0.08,
+    "cvd_htn_multiplier": 2.2,
+    "cvd_smoking_multiplier": 1.6,
+    "diabetes_duration_years": {
+      "mean": 6.5,
+      "std": 5.0,
+      "min": 1,
+      "max": 25
+    },
+    "medications": {
+      "categories": [
+        "None",
+        "Insulin",
+        "ACE Inhibitors",
+        "Statins",
+        "Combination"
+      ]
+    }
+  },
+  "habits_and_fitness": {
+    "workout_frequency_days": {
+      "distribution": "truncated_poisson",
+      "lambda": 2.8,
+      "min": 0,
+      "max": 7
+    },
+    "physical_activity_level": {
+      "base_mean": 4.2,
+      "workout_coupling": 0.9,
+      "min": 0,
+      "max": 10
+    },
+    "workout_sessions": {
+      "types": [
+        "Strength",
+        "Cardio",
+        "Yoga",
+        "HIIT"
+      ],
+      "type_probabilities": [
+        0.27,
+        0.27,
+        0.24,
+        0.22
+      ],
+      "experience_levels": [
+        1,
+        2,
+        3
+      ],
+      "experience_probabilities": [
+        0.38,
+        0.42,
+        0.2
+      ],
+      "duration_hours": {
+        "mean": 1.25,
+        "std": 0.32,
+        "min": 0.5,
+        "max": 2.2
+      },
+      "avg_bpm": {
+        "Cardio": {
+          "mean": 150.0,
+          "std": 8.0
+        },
+        "HIIT": {
+          "mean": 158.0,
+          "std": 9.0
+        },
+        "Strength": {
+          "mean": 138.0,
+          "std": 8.0
+        },
+        "Yoga": {
+          "mean": 124.0,
+          "std": 6.0
+        }
+      },
+      "max_bpm_elevation": {
+        "mean": 28.0,
+        "std": 5.0,
+        "min": 15.0,
+        "max": 45.0
+      },
+      "calorie_rate_per_hour": {
+        "Cardio": 750.0,
+        "HIIT": 880.0,
+        "Strength": 620.0,
+        "Yoga": 380.0
+      }
+    },
+    "caffeine_intake_cups": {
+      "distribution": "truncated_normal",
+      "mean": 2.3,
+      "std": 1.4,
+      "min": 0.0,
+      "max": 6.0
+    },
+    "water_intake_liters": {
+      "base_mean": 2.2,
+      "base_std": 0.45,
+      "workout_bonus_per_day": 0.18,
+      "min": 1.0,
+      "max": 5.0
+    },
+    "fitness_modifiers": {
+      "bpm_reduction_per_workout_day": 1.9,
+      "fat_reduction_per_workout_day": 0.7,
+      "bmi_reduction_per_workout_day": 0.22
+    }
+  },
+  "sleep_and_cognition": {
+    "sleep_hours": {
+      "base_mean": 7.5,
+      "base_std": 1.1,
+      "caffeine_penalty_per_cup": 0.35,
+      "workout_bonus_per_day": 0.14,
+      "stress_penalty_per_level": 0.18,
+      "min": 3.0,
+      "max": 10.0
+    },
+    "sleep_quality_score": {
+      "base_mean": 76.0,
+      "base_std": 9.5,
+      "sleep_hours_coeff": 6.5,
+      "optimal_sleep_hours": 7.5,
+      "caffeine_penalty_per_cup": 3.0,
+      "workout_bonus_per_day": 2.5,
+      "min": 0.0,
+      "max": 100.0
+    },
+    "daytime_sleepiness": {
+      "base_mean": 8.0,
+      "noise_std": 1.8,
+      "sleep_deficit_multiplier": 2.4,
+      "optimal_sleep_hours": 7.5,
+      "min": 0.0,
+      "max": 24.0
+    },
+    "stress_level": {
+      "base_mean": 5.2,
+      "noise_std": 1.1,
+      "sleep_quality_impact": -0.05,
+      "workout_impact": -0.35,
+      "caffeine_impact": 0.38,
+      "min": 0.0,
+      "max": 10.0
+    },
+    "emotion_regulation_score": {
+      "base_mean": 42.0,
+      "base_std": 14.0,
+      "stress_penalty": -2.2,
+      "sleep_bonus": 1.5,
+      "min": 10.0,
+      "max": 68.0
+    },
+    "cognition": {
+      "stroop_reaction_time_s": {
+        "base_mean": 1.85,
+        "base_std": 0.26,
+        "age_penalty_per_year": 0.016,
+        "age_baseline": 30.0,
+        "sleep_deprivation_penalty": 0.15,
+        "stress_penalty": 0.045,
+        "min": 0.8,
+        "max": 4.5
+      },
+      "n_back_accuracy_pct": {
+        "base_mean": 88.0,
+        "base_std": 5.2,
+        "age_penalty_per_year": 0.24,
+        "age_baseline": 30.0,
+        "sleep_deprivation_penalty": 3.5,
+        "stress_penalty": 1.2,
+        "min": 30.0,
+        "max": 100.0
+      },
+      "pvt_reaction_time_ms": {
+        "base_mean": 275.0,
+        "base_std": 30.0,
+        "sleep_deprivation_multiplier": 28.0,
+        "stress_multiplier": 6.0,
+        "age_multiplier": 1.2,
+        "age_baseline": 30.0,
+        "min": 180.0,
+        "max": 600.0
+      }
+    }
+  },
+  "metabolism_and_vitals": {
+    "resting_bpm": {
+      "base_mean": 72.0,
+      "base_std": 6.0,
+      "stress_impact": 1.15,
+      "min": 45.0,
+      "max": 115.0
+    },
+    "systolic_bp": {
+      "base_mean": 118.0,
+      "base_std": 9.0,
+      "age_impact": 0.42,
+      "age_baseline": 25.0,
+      "bmi_impact": 1.35,
+      "bmi_baseline": 22.0,
+      "stress_impact": 1.55,
+      "min": 85.0,
+      "max": 210.0
+    },
+    "diastolic_bp": {
+      "base_mean": 76.0,
+      "base_std": 6.0,
+      "systolic_coupling": 0.45,
+      "systolic_baseline": 118.0,
+      "bmi_impact": 0.6,
+      "bmi_baseline": 22.0,
+      "stress_impact": 0.7,
+      "min": 55.0,
+      "max": 125.0
+    },
+    "fasting_glucose_mg_dl": {
+      "base_mean": 90.0,
+      "base_std": 8.0,
+      "bmi_impact": 1.9,
+      "bmi_baseline": 25.0,
+      "age_impact": 0.32,
+      "age_baseline": 30.0,
+      "sedentary_penalty": 8.5,
+      "sedentary_threshold_days": 2,
+      "diabetic_fraction": 0.14,
+      "diabetic_elevation_mean": 68.0,
+      "diabetic_elevation_std": 24.0,
+      "min": 65.0,
+      "max": 320.0
+    },
+    "hba1c_pct": {
+      "glucose_coupling_slope": 0.032,
+      "glucose_coupling_intercept": 2.7,
+      "noise_std": 0.25,
+      "min": 4.0,
+      "max": 14.0
+    },
+    "derived_hrv_s": {
+      "base_mean": 0.11,
+      "base_std": 0.014,
+      "workout_bonus": 0.0038,
+      "sleep_bonus": 0.0032,
+      "stress_penalty": -0.0042,
+      "age_penalty": -0.00038,
+      "age_baseline": 30.0,
+      "min": 0.04,
+      "max": 0.18
+    },
+    "body_temperature_c": {
+      "mean": 36.75,
+      "std": 0.3,
+      "min": 35.8,
+      "max": 37.8
+    },
+    "oxygen_saturation_pct": {
+      "mean": 98.0,
+      "std": 1.1,
+      "min": 91.0,
+      "max": 100.0
+    },
+    "respiratory_rate_bpm": {
+      "mean": 15.5,
+      "std": 2.0,
+      "min": 10.0,
+      "max": 24.0
+    },
+    "risk_thresholds": {
+      "systolic_high": 135.0,
+      "glucose_high": 120.0,
+      "bmi_high": 30.0,
+      "min_criteria_count": 2
+    }
+  },
+  "ophthalmology_and_retina": {
+    "optic_disc_area": {
+      "mean": 2.1,
+      "std": 0.48,
+      "min": 0.8,
+      "max": 4.0
+    },
+    "optic_cup_area": {
+      "mean": 0.95,
+      "std": 0.28,
+      "min": 0.2,
+      "max": 2.2
+    },
+    "cup_to_disc_ratio": {
+      "base_mean": 0.28,
+      "base_std": 0.11,
+      "glaucoma_elevation": 0.34,
+      "min": 0.05,
+      "max": 0.92
+    },
+    "intraocular_pressure_mmhg": {
+      "base_mean": 15.2,
+      "base_std": 2.8,
+      "glaucoma_bonus": 8.8,
+      "min": 8.0,
+      "max": 35.0
+    },
+    "macular_thickness_um": {
+      "mean": 280.0,
+      "std": 22.0,
+      "dr_edema_bonus": 28.0,
+      "min": 190.0,
+      "max": 380.0
+    },
+    "rnfl_thickness_um": {
+      "base_mean": 105.0,
+      "age_decay_per_decade": -3.4,
+      "age_baseline": 30.0,
+      "glaucoma_decay": -19.0,
+      "noise_std": 4.5,
+      "min": 60.0,
+      "max": 125.0
+    },
+    "vessel_tortuosity": {
+      "base_mean": 0.26,
+      "hypertension_factor": 0.0038,
+      "hypertension_threshold": 135.0,
+      "noise_std": 0.08,
+      "min": 0.01,
+      "max": 3.0
+    },
+    "bifurcation_angle_deg": {
+      "mean": 75.0,
+      "std": 9.5,
+      "min": 45.0,
+      "max": 105.0
+    },
+    "faz_area_mm2": {
+      "mean": 0.3,
+      "std": 0.09,
+      "min": 0.1,
+      "max": 0.65
+    },
+    "image_quality_score": {
+      "mean": 0.72,
+      "std": 0.14,
+      "min": 0.4,
+      "max": 1.0
+    },
+    "texture_glcm_contrast": {
+      "base_mean": 1.95,
+      "base_std": 0.75,
+      "dr_bonus": 2.2,
+      "min": 0.05,
+      "max": 12.0
+    },
+    "texture_gabor_response": {
+      "mean": 0.6,
+      "std": 0.18,
+      "min": 0.05,
+      "max": 0.99
+    },
+    "deep_features": {
+      "f1_mean": 0.0,
+      "f1_std": 1.0,
+      "f2_mean": 0.0,
+      "f2_std": 1.0,
+      "f3_mean": 0.0,
+      "f3_std": 1.0
+    },
+    "visual_acuity": {
+      "categories": [
+        "20/20",
+        "20/40",
+        "20/80",
+        "20/200"
+      ],
+      "normal_probs": [
+        0.7,
+        0.22,
+        0.06,
+        0.02
+      ],
+      "impaired_probs": [
+        0.1,
+        0.3,
+        0.38,
+        0.22
+      ]
+    },
+    "symptom_duration_weeks": {
+      "normal_max": 0,
+      "disorder_mean": 8.0,
+      "disorder_std": 6.5,
+      "min": 0,
+      "max": 35
+    },
+    "microaneurysms_count": {
+      "base_lambda": 0.15,
+      "hba1c_threshold": 6.2,
+      "hba1c_multiplier": 1.95,
+      "dr_bonus_lambda": 4.2,
+      "max": 25
+    },
+    "exudates_count": {
+      "base_lambda": 0.12,
+      "hba1c_threshold": 6.5,
+      "hba1c_multiplier": 1.6,
+      "dr_bonus_lambda": 3.0,
+      "max": 20
+    },
+    "hemorrhages_count": {
+      "base_lambda": 0.1,
+      "systolic_threshold": 138.0,
+      "systolic_multiplier": 0.065,
+      "hr_bonus_lambda": 3.2,
+      "max": 15
+    },
+    "disorders": {
+      "codes": {
+        "0": "Normal",
+        "1": "Diabetic_Retinopathy",
+        "2": "Glaucoma",
+        "3": "AMD",
+        "4": "Hypertensive_Retinopathy"
+      },
+      "dr_hba1c_threshold": 6.5,
+      "dr_weight": 0.3,
+      "glaucoma_iop_threshold": 20.5,
+      "glaucoma_weight": 0.22,
+      "amd_age_threshold": 60.0,
+      "amd_weight": 0.2,
+      "hr_systolic_threshold": 140.0,
+      "hr_weight": 0.24
+    }
+  },
+  "temporal_and_schedules": {
+    "start_date": "2026-01-01",
+    "default_days_duration": 60,
+    "duration_min_days": 30,
+    "duration_max_days": 90,
+    "frequencies": {
+      "wearable_daily_probability": 0.96,
+      "blood_pressure_interval_days_min": 3,
+      "blood_pressure_interval_days_max": 14,
+      "fasting_glucose_interval_days_min": 7,
+      "fasting_glucose_interval_days_max": 28,
+      "hba1c_interval_days_min": 60,
+      "hba1c_interval_days_max": 180,
+      "retinal_exam_interval_days_min": 90,
+      "retinal_exam_interval_days_max": 365,
+      "cognitive_test_interval_days_min": 7,
+      "cognitive_test_interval_days_max": 21
+    },
+    "lapses": {
+      "wearable_sensor_drop_rate": 0.05,
+      "sleep_log_miss_rate": 0.06,
+      "workout_log_miss_rate": 0.04,
+      "clinical_visit_cancel_rate": 0.05
+    }
+  }
+}
