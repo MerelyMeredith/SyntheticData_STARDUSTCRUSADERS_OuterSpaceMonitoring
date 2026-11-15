@@ -203,8 +203,8 @@ SyntheticData_STARDUSTCRUSADERS_OuterSpaceMonitoring/
 ## Installation & Quick Start
 
 ### Prerequisites
-- Python 3.10, 3.11, 3.12, or 3.13
-- Git
+- Python 3.10, 3.11, 3.12, or 3.13.
+- Git.
 
 ### Setup
 
