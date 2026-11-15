@@ -20,6 +20,7 @@ from __future__ import annotations
 import argparse
 from datetime import datetime, timedelta
 from pathlib import Path
+from collections.abc import Sequence
 from typing import Any
 
 import numpy as np
@@ -558,20 +559,61 @@ def generate_patient_longitudinal_series(
     return pd.DataFrame(records)
 
 
+def allocate_days(
+    records: int,
+    patients: int | None = None,
+    days: int | None = None,
+    default_days: int = 60,
+) -> list[int]:
+    """Days of history to generate for each patient.
+
+    ``records`` is the *exact* number of observation rows for the whole cohort:
+    it decides how many patients are created, never how long each patient is
+    followed. The per-patient duration comes from ``days`` or, failing that, from
+    the config default, so a records target never distorts the time series.
+    When the target is not a multiple of the duration, the final patient covers
+    the remaining days so the row count lands exactly on ``records``.
+
+    An explicit ``patients`` (and ``days``) request always wins: ``records`` is
+    then ignored instead of silently overriding what the caller asked for.
+    """
+    duration = default_days if days is None else int(days)
+    if duration < 1:
+        raise ValueError("days must be at least 1")
+
+    if patients is not None:
+        if int(patients) < 1:
+            raise ValueError("patients must be at least 1")
+        return [duration] * int(patients)
+
+    if int(records) < 1:
+        raise ValueError("records must be at least 1")
+
+    full, remainder = divmod(int(records), duration)
+    counts = [duration] * full
+    if remainder:
+        counts.append(remainder)
+    return counts
+
+
 def generate_longitudinal_dataset(
-    num_patients: int,
+    num_patients: int | None = None,
     days_per_patient: int | None = None,
     config: dict[str, Any] | None = None,
     patients_dir: Path | None = None,
     seed: int | None = 42,
+    day_counts: Sequence[int] | None = None,
 ) -> tuple[pd.DataFrame, list[Path]]:
     """Generate longitudinal time-series data for multiple patients and save per-user files."""
     if config is None:
         config = configure.load_config()
 
     sched_cfg = config.get("temporal_and_schedules", {})
-    if days_per_patient is None:
-        days_per_patient = int(sched_cfg.get("default_days_duration", 60))
+    if day_counts is None:
+        if days_per_patient is None:
+            days_per_patient = int(sched_cfg.get("default_days_duration", 60))
+        day_counts = [days_per_patient] * max(1, int(num_patients or 1))
+    day_counts = [int(d) for d in day_counts]
 
     start_date_str = sched_cfg.get("start_date", "2026-01-01")
     start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
@@ -584,11 +626,11 @@ def generate_longitudinal_dataset(
     patient_dfs: list[pd.DataFrame] = []
     saved_patient_files: list[Path] = []
 
-    for idx in range(num_patients):
+    for idx, patient_days in enumerate(day_counts):
         p_id = f"SC-{idx+1:05d}"
         p_df = generate_patient_longitudinal_series(
             patient_id=p_id,
-            days=days_per_patient,
+            days=patient_days,
             config=config,
             rng=rng,
             start_date=start_date,
@@ -619,33 +661,34 @@ def run(context: registry.Context) -> int:
     sched_cfg = config.get("temporal_and_schedules", {})
     default_days = int(sched_cfg.get("default_days_duration", 60))
 
-    if patients_arg is not None:
-        num_patients = patients_arg
-        days_per_patient = days_arg if days_arg is not None else default_days
-    elif days_arg is not None:
-        days_per_patient = days_arg
-        num_patients = max(1, records_arg // days_per_patient)
-    else:
-        # Balanced allocation from total records
-        if records_arg <= 100:
-            num_patients = records_arg
-            days_per_patient = default_days
-        else:
-            days_per_patient = default_days
-            num_patients = max(5, records_arg // days_per_patient)
+    try:
+        day_counts = allocate_days(
+            records=records_arg,
+            patients=patients_arg,
+            days=days_arg,
+            default_days=default_days,
+        )
+    except ValueError as err:
+        print(f"[generate] invalid request: {err}")
+        return 1
+
+    num_patients = len(day_counts)
+    days_per_patient = day_counts[0]
+    total_rows = sum(day_counts)
 
     paths.ensure_dir(output_path.parent)
     paths.ensure_dir(patients_dir)
 
     print(f"[generate] generating longitudinal dataset:")
     print(f"           patients: {num_patients:,} users | days per patient: {days_per_patient:,} days")
-    print(f"           total expected observations: {num_patients * days_per_patient:,}")
+    if len(set(day_counts)) > 1:
+        print(f"           last user covers {day_counts[-1]:,} days to land exactly on the record target")
+    print(f"           total expected observations: {total_rows:,}")
     print(f"           saving individual user files in: {patients_dir}")
     print(f"           saving consolidated dataset in: {output_path}")
 
     combined_df, patient_files = generate_longitudinal_dataset(
-        num_patients=num_patients,
-        days_per_patient=days_per_patient,
+        day_counts=day_counts,
         config=config,
         patients_dir=patients_dir,
     )

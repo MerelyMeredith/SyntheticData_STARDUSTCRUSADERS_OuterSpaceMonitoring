@@ -238,6 +238,12 @@ python app/main.py configure
 # Produces output/dataset.csv AND individual files in output/patients/
 python app/main.py generate --patients 30 --days 60 --output output/dataset.csv
 
+# Or ask for an exact row count: --records is the total for the cohort and decides
+# how many patients are created, never how long each one is followed. If the target
+# is not a multiple of the duration, the last patient covers the remaining days.
+# (--records is ignored whenever --patients is given.)
+python app/main.py generate --records 1000            # 17 users: 16 x 60 days + 1 x 40 = exactly 1000 rows
+
 # Audit the dataset against physiological bounds and clinical correlations
 python app/main.py validate --input output/dataset.csv --report output/validation_report.md
 

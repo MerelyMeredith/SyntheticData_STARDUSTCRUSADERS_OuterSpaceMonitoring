@@ -85,7 +85,14 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser("info", help="list data sources, modules, config and output")
 
     generate = sub.add_parser("generate", help="generate longitudinal synthetic patient data")
-    generate.add_argument("-n", "--records", type=int, default=1000, help="target total observation rows")
+    generate.add_argument(
+        "-n",
+        "--records",
+        type=int,
+        default=1000,
+        help="exact number of observation rows for the whole cohort; "
+        "sets how many patients are created, never their duration (ignored with --patients)",
+    )
     generate.add_argument("-p", "--patients", type=int, default=None, help="number of distinct patient users")
     generate.add_argument("-d", "--days", type=int, default=None, help="days across time per patient")
     generate.add_argument("-o", "--output", default=str(paths.OUTPUT_DIR / "dataset.csv"), help="consolidated CSV output")
@@ -135,7 +142,7 @@ def _interactive() -> int:
             )
             return registry.dispatch(registry.Context(command="configure", args=args))
         if choice in {"3", "generate"}:
-            records = input("number of target records [1000]: ").strip()
+            records = input("total rows for the whole cohort [1000]: ").strip()
             patients = input("number of patients (leave empty for auto): ").strip()
             days = input("days across time (leave empty for auto): ").strip()
             output = input(f"output path [{paths.OUTPUT_DIR / 'dataset.csv'}]: ").strip()
